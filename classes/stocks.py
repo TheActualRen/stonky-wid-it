@@ -13,8 +13,10 @@ class Stock:
             start=from_date, end=to_date
         )
 
+        self.opens: list[float] = self.stock_data["Open"].tolist()
         self.highs: list[float] = self.stock_data["High"].tolist()
         self.lows: list[float] = self.stock_data["Low"].tolist()
+        self.closes: list[float] = self.stock_data["Close"].tolist()
 
         self.max_y_val = max(self.highs)
         self.min_y_val = min(self.lows)

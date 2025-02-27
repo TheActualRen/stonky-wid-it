@@ -13,8 +13,8 @@ if __name__ == "__main__":
     # print(apple_obj.min_y_val)
 
     print(len(apple_obj.dates))
-    print(type(apple_obj.dates[0]))
-   
+    print(len(apple_obj.opens))
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -22,7 +22,17 @@ if __name__ == "__main__":
                 running = False
 
             window_obj.screen.fill("black")
-            window_obj.draw_axes(apple_obj.min_y_val, apple_obj.max_y_val, apple_obj.dates)
+            window_obj.draw_axes(
+                apple_obj.min_y_val, apple_obj.max_y_val, apple_obj.dates
+            )
+            window_obj.draw_candlesticks(
+                apple_obj.dates,
+                apple_obj.opens,
+                apple_obj.highs,
+                apple_obj.lows,
+                apple_obj.closes,
+                apple_obj.min_y_val,
+            )
 
             pygame.display.flip()  # Update the full display Surface to the screen
             window_obj.clock.tick(60)  # Caps fps to 60
