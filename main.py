@@ -9,9 +9,12 @@ if __name__ == "__main__":
     window_obj = Window(800, 800, "Stonky Wid It")
 
     # print(apple_obj.stock_data)
-    print(apple_obj.max_y_val)
-    print(apple_obj.min_y_val)
+    # print(apple_obj.max_y_val)
+    # print(apple_obj.min_y_val)
 
+    print(len(apple_obj.dates))
+    print(type(apple_obj.dates[0]))
+   
     running = True
     while running:
         for event in pygame.event.get():
@@ -19,7 +22,7 @@ if __name__ == "__main__":
                 running = False
 
             window_obj.screen.fill("black")
-            window_obj.draw_axes(apple_obj.min_y_val, apple_obj.max_y_val)
+            window_obj.draw_axes(apple_obj.min_y_val, apple_obj.max_y_val, apple_obj.dates)
 
             pygame.display.flip()  # Update the full display Surface to the screen
             window_obj.clock.tick(60)  # Caps fps to 60

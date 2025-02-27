@@ -18,3 +18,5 @@ class Stock:
 
         self.max_y_val = max(self.highs)
         self.min_y_val = min(self.lows)
+
+        self.dates: list[pd.Timestamp] = self.stock_data.index.tolist()
