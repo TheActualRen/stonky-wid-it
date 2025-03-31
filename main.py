@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pygame.init()
 
     apple_obj = Stock("AAPL", "2025-01-01", "2025-02-01")
-    window_obj = Window(800, 800, "Stonky Wid It")
+    window_obj = Window(801, 800, "Stonky Wid It")
 
     # print(apple_obj.stock_data)
     # print(apple_obj.max_y_val)
@@ -14,6 +14,7 @@ if __name__ == "__main__":
 
     print(len(apple_obj.dates))
     print(len(apple_obj.opens))
+    candles_drawn: int = 0
 
     running = True
     while running:
@@ -25,7 +26,7 @@ if __name__ == "__main__":
             window_obj.draw_axes(
                 apple_obj.min_y_val, apple_obj.max_y_val, apple_obj.dates
             )
-            window_obj.draw_candlesticks(
+            window_obj.draw_increment(
                 apple_obj.dates,
                 apple_obj.opens,
                 apple_obj.highs,
@@ -33,6 +34,8 @@ if __name__ == "__main__":
                 apple_obj.closes,
                 apple_obj.min_y_val,
             )
+
+            candles_drawn += 1
 
             pygame.display.flip()  # Update the full display Surface to the screen
             window_obj.clock.tick(60)  # Caps fps to 60

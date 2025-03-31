@@ -11,8 +11,8 @@ class Window:
         self.CAPTION = CAPTION
 
         self.screen: pygame.Surface = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        pygame.display.set_caption = self.CAPTION
-                
+        pygame.display.set_caption = self.CAPTION                
+
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
         self.pan_offset_x: int = 0
@@ -22,6 +22,12 @@ class Window:
 
         self.y_axis_length = self.origin_y - Window.PADDING
         self.x_axis_length = (self.WIDTH - Window.PADDING) - self.origin_x
+
+        self.last_draw_time = pygame.time.get_ticks()
+        self.candlestick_index = 0
+        
+        self.candlesticks = []
+
 
     def draw_axes(self, min_y_val: float, max_y_val: float, dates: list[pd.Timestamp]):
         # This will allow for the range to be dynamically updated based on the max, min values
@@ -141,5 +147,94 @@ class Window:
                     int(candle_top),
                     candle_width,
                     int(candle_height),
+                ),
+            )
+
+
+    def draw_increment(
+        self,
+        dates: list[pd.Timestamp],
+        opens: list[float],
+        highs: list[float],
+        lows: list[float],
+        closes: list[float],
+        min_y_val: float,
+    ):
+        candle_width = max(int(self.scale_x * 0.6), 6)
+
+        current_time = pygame.time.get_ticks()
+        elapsed_time = current_time - self.last_draw_time
+
+        # If 1 second has passed, draw the next candlestick
+        if elapsed_time >= 1000 and self.candlestick_index < len(dates):
+            # Get the current candlestick data
+            i = self.candlestick_index
+            curr_x_pos = (self.pan_offset_x + Window.PADDING) + (i + 1) * self.scale_x
+
+            open_y = self.origin_y - (opens[i] - min_y_val) * self.scale_y
+            high_y = self.origin_y - (highs[i] - min_y_val) * self.scale_y
+            low_y = self.origin_y - (lows[i] - min_y_val) * self.scale_y
+            close_y = self.origin_y - (closes[i] - min_y_val) * self.scale_y
+
+            color = "green" if closes[i] > opens[i] else "red"
+
+            candle_top = min(open_y, close_y)
+            candle_height = abs(open_y - close_y)
+
+            # Draw the wick of the candlestick
+            pygame.draw.line(
+                self.screen,
+                "white",
+                (int(curr_x_pos), int(high_y)),
+                (int(curr_x_pos), int(low_y)),
+                2,
+            )
+
+            # Draw the main body of the candlestick
+            pygame.draw.rect(
+                self.screen,
+                color,
+                (
+                    int(curr_x_pos - candle_width // 2),  # centers the candlestick
+                    int(candle_top),
+                    candle_width,
+                    int(candle_height),
+                ),
+            )
+
+            # Store the candlestick for persistence
+            self.candlesticks.append({
+                "x": curr_x_pos,
+                "open_y": open_y,
+                "close_y": close_y,
+                "high_y": high_y,
+                "low_y": low_y,
+                "color": color,
+                "candle_width": candle_width,
+                "candle_height": candle_height
+            })
+
+            # Update the time for the next candlestick and increment the index
+            self.last_draw_time = current_time
+            self.candlestick_index += 1
+
+        # Redraw all previously drawn candlesticks
+        for candlestick in self.candlesticks:
+            pygame.draw.line(
+                self.screen,
+                "white",
+                (int(candlestick["x"]), int(candlestick["high_y"])),
+                (int(candlestick["x"]), int(candlestick["low_y"])),
+                2,
+            )
+
+            pygame.draw.rect(
+                self.screen,
+                candlestick["color"],
+                (
+                    int(candlestick["x"] - candlestick["candle_width"] // 2),  # centers the candlestick
+                    int(candlestick["open_y"] if candlestick["open_y"] < candlestick["close_y"] else candlestick["close_y"]),
+                    candlestick["candle_width"],
+                    int(candlestick["candle_height"]),
                 ),
             )
